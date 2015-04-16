@@ -1,0 +1,37 @@
+#headerCon { 
+  background: rgba(255,255,255,1);
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+  border-top: 10px solid #009bff;
+  color: black;
+  // float: left;
+  // height: 50%;
+  left: 30%;
+  // margin-top: 39px;
+  padding: 3%;
+  position: absolute;
+  text-align: center;
+  top: 25%;
+  width: 40%;  
+  z-index: 500;
+  @media (max-width: 1100px) {
+    left: 10%;
+    top: 15%;
+    width: 80%;
+  }
+}
+
+.header-title {
+  // color: $blue;
+  font-family: "Futura Today Bold", Arial,sans-serif;
+  font-size: 2em;
+  font-weight: 300;
+  text-transform: uppercase;
+  @media (max-width: 750px){
+    font-size: 1.5em;
+  }
+}
+
+.instruct { 
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}

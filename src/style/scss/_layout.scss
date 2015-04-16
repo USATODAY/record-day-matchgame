@@ -1,0 +1,197 @@
+* {
+   -moz-box-sizing:    border-box;   /* Firefox 1, probably can drop this */
+   -webkit-box-sizing: border-box;   /* Safari 3-4, also probably droppable */
+    box-sizing:        border-box;   /* Everything else */
+}
+
+.group:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+body, div, html, {
+	margin: 0;
+	padding: 0;
+}
+
+* {
+   -moz-box-sizing:    border-box;   /* Firefox 1, probably can drop this */
+   -webkit-box-sizing: border-box;   /* Safari 3-4, also probably droppable */
+    box-sizing:        border-box;   /* Everything else */
+}
+
+header, footer { box-sizing: content-box; }
+
+
+body, div, html, {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  background-color: white;
+  color: $dark-grey;
+  font-family: "Futura Today", Arial,sans-serif;
+  height: 100%;
+}
+
+article {
+    background-color: white;
+}
+
+.page-wrap {
+  margin: 0 auto;
+  max-width: 1100px;
+  width: 80%;
+}
+
+.group:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+html {
+	font-family: "Futura Today", Arial,sans-serif;
+	font-size: 100%;
+	height: 100%;
+	@media (max-width: 750px){
+		font-size: 75%;
+	}
+}
+
+body {
+	height: 100%;
+}
+
+img {
+	max-width: 100%;
+}
+
+@import "bits";
+
+#overallCon {
+	box-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
+	height: 100%;
+	margin: 0 auto;
+	position: absolute;
+	overflow: hidden;
+	top: 0;
+	width: 100%;
+	@media(max-width: 1000px) {
+		overflow: scroll;
+	}
+}
+
+#header {
+	position: absolute;
+	top: 0;
+	z-index: 900;
+}
+
+
+.footer-wrap {
+	background: #ececec;
+	bottom: 2.5em;
+	min-height: 20px;
+	padding: 10px;
+	position: absolute;
+	width: 100%;
+	@media(max-width: 1000px) {
+		bottom: -5em;
+		height: 5em;
+	}
+}
+
+.footer-wrap h6 {
+	float: left;
+	color: #999;
+	font: normal 0.8em/1.5 arial, Helvetica, sans-serif;
+	margin: 2px 0 0 10px;
+	width: 80%;
+}
+
+.hide {
+	margin-left: -20%;
+}
+
+#preloader{
+	background-color: white;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: 900;
+	img {
+		display: block;
+		width: 500px;
+		margin: 10% auto 0 auto;
+	}
+	#loader{
+		width: 128px;
+		margin-top: 0;
+	}
+}
+
+.landscape {
+	#overallCon {
+		opacity: 0.15;
+	}
+	#landscape-warning {
+		display: block
+	}
+	.headcircle {
+		display: none;
+	}
+}
+
+#landscape-warning {
+	background-color: rgba(0, 0, 0, 0.75);
+	color: white;
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	z-index: 5000;
+	h2 {
+		margin-top: 15%;
+		width: 100%;
+		text-align: center;
+		text-transform: uppercase;
+	}
+}
+
+.iapp-wrap {
+    margin: 0 auto;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+
+#overlay {
+    height: calc(100% - 40px)
+}
+
+article.asset, article {
+    background: white;
+    height: 100%;
+    width: 100%;
+}
+
+.transition-wrap {
+    height: 100%;
+}
+
+section.contents {
+    height: 100%;
+}
+
+.non-article-content {
+    height: 100%;
+}

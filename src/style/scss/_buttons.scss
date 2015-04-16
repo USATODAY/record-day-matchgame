@@ -8,8 +8,8 @@
   transition: background-color .5s;
   width: 120px;
   &:hover{
+    background-color: lighten($blue, 5);
     cursor: pointer;
-    background-color: $dark-blue;
     transition: background-color .5s;
   }
 }

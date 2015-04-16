@@ -3,15 +3,23 @@ define(
     'jquery',
     'underscore',
     'templates',
-    'config'
+    'api/analytics',
+    'config',
+    'jquery_ui',
+    'jquery_ui_touch_punch'
   ],
-  function(jQuery, _, templates, config){
+  function(jQuery, _, templates, Analytics, config){
 
     //set up global variables
     var origXPos = [];
     var origYPos = [];
     var $overallCon = jQuery("#overallCon");
     var matchData;
+    var currentRound = 0;
+    var roundCorrect = 0;
+    var roundAttempts = 0;
+
+    var base_path = "http://www.gannett-cdn.com/experiments/usatoday/2015/04/record-day/"
 
     var matchGameObj = matchGameObj || {};
         matchGameObj.correct = 0;
@@ -85,63 +93,128 @@ define(
       }, 1000);
     };
 
-    // set up celebrity match game function
-    matchGameObj.celebsInit = function() {
+    matchGameObj.renderDrag = function(data) {
 
-      //dummy data if tabletop not used
-      if (!matchGameObj.celebData) {
-        //set up celebrity data
-          matchGameObj.celebData = matchData;
+        matchGameObj.dragCon.html(templates["infopanel.html"]());
+
+        matchGameObj.shuffle(data);
+    //setup draggable area
+      for (var i = 0; i <  data.length; i++) {
+          var item = data[i];
+          var context = {
+            item: item,
+            base_path: base_path
+          };
+          if (currentRound < 3) {
+            matchGameObj.dragCon.find('.drag-wrap').append(templates["dragcircle.html"](context));
+          } else {
+            matchGameObj.dragCon.find('.drag-wrap').append(templates["dragimage.html"](context));
+          }
       }
+    };
 
+    matchGameObj.renderTarget = function(data) {
+        matchGameObj.targetCon.empty();
+
+        matchGameObj.shuffle(data);
+        for (var c = 0; c <  data.length; c++) {
+            var item = data[c];
+            var context = {
+              item: item,
+              base_path: base_path
+            }
+            if (currentRound < 3) {
+                matchGameObj.targetCon.append(templates["target.html"](context));
+            } else {
+                matchGameObj.targetCon.append(templates["texttarget.html"](context));
+            }
+        }
+    };
+
+    matchGameObj.startRound = function(data) {
+        roundCorrect = 0;
+        roundAttempts = 0;
+        matchGameObj.minutes = 0;
+        matchGameObj.seconds= 0;
+        $(".round-container").append(templates["round.html"]({round: currentRound}));
+
+        var selector = ".round-wrap." + currentRound;
+        matchGameObj.$roundWrap = $(selector);
+        matchGameObj.dragCon = matchGameObj.$roundWrap.find(".headCon");
+        matchGameObj.targetCon = matchGameObj.$roundWrap.find(".targetCon");
+      
+
+        matchGameObj.renderDrag(data);
+
+     
+        //setup target area
+        matchGameObj.renderTarget(data);
+       
+        //scramble starting positions of drag circles
+        matchGameObj.scrableStartPositions(".headcircle");
+        $(".atarget > img").load(function(e) {
+            matchGameObj.imgRatio();
+        });
+
+        if (currentRound > 0) {
+            matchGameObj.animateCircles();
+             matchGameObj.dragCon.removeClass("hide");
+            matchGameObj.targetCon.removeClass("intro");
+        }
+        //make things draggable and droppable
+      $( ".draggable" ).draggable({ revert: true });
+
+      $( ".droppable" ).droppable({
+        hoverClass: "boxHover",
+        drop: function( event, ui ) {
+          Analytics.trackEvent("Attempted match");
+          $( this );
+           var dragid = ui.draggable.attr("id").substring(1, ui.draggable.attr("id").length);
+           var dropid = $(this).attr("id").substring(1, $(this).attr("id").length);
+           var dataid = $(this).attr("data-id");
+
+
+           // check if guess is correct
+           if (dragid == dropid) { console.log("correct"); matchGameObj.correctGuess(dragid, dropid, ui);} 
+
+           //run if guess is wrong
+           else { console.log("incorrect"); matchGameObj.incorrectGuess(dropid); }
+        }
+      });
+
+
+    };
+
+    // set up celebrity match game function
+    matchGameObj.gameInit = function() {
+
+      data = matchData[currentRound]
 
       //set up object variables
       matchGameObj.shareCon = jQuery("#shareCon");
-      matchGameObj.dragCon = jQuery("#headCon");
-      matchGameObj.targetCon = jQuery("#targetCon");
+            
+      matchGameObj.startRound(data);
 
-      //shuffle data
-      matchGameObj.shuffle( matchGameObj.celebData);
-
-      //setup draggable area
-      for (var i = 0; i <  matchGameObj.celebData.length; i++) {
-        matchGameObj.dragCon.append("<div class='headcircle draggable' id =atest" +  matchGameObj.celebData[i].id + ">" +
-                          "<img src='img/yearCircle.svg'/>" +  
-                          "<span class='year-label'>" + matchGameObj.celebData[i].age + "</span></div>");
-      }
-
-      //shuffle data again
-      matchGameObj.shuffle( matchGameObj.celebData);
-     
-      //setup target area
-      for (var c = 0; c <  matchGameObj.celebData.length; c++) {
-        matchGameObj.targetCon.append("<div class='atarget droppable' id='ttest" +  matchGameObj.celebData[c].id + "'>" + 
-                          "<div class='messagewrong'><img src ='img/x.svg'></div>" + 
-                          "<div class='messageright'><img src ='img/check.svg'></div><img src='img/" +  matchGameObj.celebData[c].img + "' class='bw'/>" + 
-                          "<div class ='target-info'>" + matchGameObj.celebData[c].name + "<p class='result-year'>" +  matchGameObj.celebData[c].age + "</p></div>" + 
-                          "<div class='source'>" + matchGameObj.celebData[c].targetimgsource + "</div></div></div>");
-      }
-
-      //hide Share untill the end
+            //hide Share untill the end
       matchGameObj.shareCon.hide();
 
       matchGameObj.addEventListeners();
 
-      //scramble starting positions of drag circles
-      matchGameObj.scrableStartPositions(".headcircle");
-
-      $(".atarget > img").load(function(e) {
-        matchGameObj.imgRatio();
-      });
-
-      $(window).trigger("readyToGo");
 
     }; 
 
+    matchGameObj.nextRound = function() {
+        matchGameObj.$roundWrap.hide();
+        currentRound ++;
+        data = matchData[currentRound];
+
+        matchGameObj.startRound(data);
+    }
+
     matchGameObj.scrableStartPositions = function(selector) {
       $selector = $(selector);
-      startingHeight = - 100;
-      $selector.css("top", startingHeight + "%");
+      startingHeight = - window.innerHeight;
+      $selector.css("top", startingHeight + "px");
     };
 
     matchGameObj.animateCircles = function(){
@@ -161,10 +234,12 @@ define(
       var currentName = $("#t" + dropid).find(".target-info");
       currentName.addClass("correct");
       currentImg.removeClass("bw");
-      matchGameObj.attempts ++;
-      matchGameObj.correct ++;
-      $("#numAttempts").text(matchGameObj.attempts);
-      $("#numCorrect").text(matchGameObj.correct);
+      // matchGameObj.attempts ++;
+      roundAttempts ++;
+      roundCorrect ++;
+      // matchGameObj.correct ++;
+      $("#numAttempts").text(roundAttempts);
+      $("#numCorrect").text(roundCorrect);
 
       //set correct time units for the finished message
       var timeUnits = {
@@ -181,31 +256,35 @@ define(
       }
 
       //check if game is complete
-      if (matchGameObj.correct == matchGameObj.celebData.length) {
-        matchGameObj.gameCompleted(timeUnits);
+      if (roundCorrect == matchData[currentRound].length) {
+        if (currentRound == matchData.length - 1) {
+            matchGameObj.gameCompleted(timeUnits);
+        } else {
+            _.delay(matchGameObj.nextRound, 500);
+        }
       }
     };
 
     matchGameObj.incorrectGuess = function(dropid) {
       $("#t" + dropid + " .messagewrong").css("display", "inline").delay(1500).fadeOut( "slow" );
-      matchGameObj.attempts ++;
-      $("#numAttempts").text(matchGameObj.attempts);
+      roundAttempts ++;
+      $("#numAttempts").text(roundAttempts);
     };
 
     matchGameObj.gameCompleted = function(timeUnits) {
-      Analytics.click("Completed Game");
+      Analytics.trackEvent("Completed Game");
       //stop timer
       matchGameObj.isCounting = false;
 
       //set total correct box to equal the total
-      $("#totalCorrect").text(matchGameObj.correct);
+      $("#totalCorrect").text(roundCorrect);
 
       //set finished message to display
       if (matchGameObj.minutes == 10){
-         $("#share").html("It took you " + matchGameObj.attempts + " attempts and more than 10 minutes to match them all.");
+         $("#share").html("It took you " + totalAttempts + " attempts and more than 10 minutes to match them all.");
       }
       else {
-        $("#share").html("It took you " + matchGameObj.attempts + " attempts and " + matchGameObj.minutes + " " +  timeUnits.minutes + " " + matchGameObj.seconds + " " + timeUnits.seconds + " to match them all.");
+        $("#share").html("It took you " + totalAttempts + " attempts to match them all.");
       }
 
       
@@ -283,26 +362,7 @@ define(
         matchGameObj.animateCircles();
       }, 800);
 
-      //make things draggable and droppable
-      $( ".draggable" ).draggable({ revert: true });
-
-      $( ".droppable" ).droppable({
-        hoverClass: "boxHover",
-        drop: function( event, ui ) {
-          Analytics.click("Attempted match");
-          $( this );
-           var dragid = ui.draggable.attr("id").substring(1, ui.draggable.attr("id").length);
-           var dropid = $(this).attr("id").substring(1, $(this).attr("id").length);
-           var dataid = $(this).attr("data-id");
-
-           // check if guess is correct
-           if (dragid == dropid) { matchGameObj.correctGuess(dragid, dropid, ui);} 
-
-           //run if guess is wrong
-           else { matchGameObj.incorrectGuess(dropid); }
-        }
-      });
-
+      
     };
 
     matchGameObj.addEventListeners = function() {
@@ -350,6 +410,7 @@ define(
     };
 
     matchGameObj.init = function() {
+        console.log(Analytics);
         var hostname = window.location.hostname;
 
         var dataURL;
@@ -362,10 +423,10 @@ define(
 
 
         $.getJSON(dataURL, function(data) {
-            matchData = data;
+            matchData = data.games;
             $('.iapp-wrap').html(templates["app.html"]());
 
-            matchGameObj.celebsInit();
+            matchGameObj.gameInit();
             matchGameObj.checkOrientation();
 
             var blnIframeEmbed = window != window.parent;

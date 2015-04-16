@@ -31,6 +31,14 @@ module.exports = function(grunt) {
     },
     'underscore': {
       "exports": '_'
+    },
+    'jquery_ui': {
+        "deps": ['jquery'],
+        'exports': '$'
+    },
+    'jquery_ui_touch_punch' : {
+        "deps": ['jquery_ui'],
+        'exports': '$'
     }
   };
 

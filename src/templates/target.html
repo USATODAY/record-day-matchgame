@@ -1,0 +1,13 @@
+<div class='atarget droppable' id='ttest<%= item.id %>'>
+    <div class='messagewrong'>
+        <img src ='<%=base_path%>img/x.svg'>
+    </div>
+    <div class='messageright'>
+        <img src ='<%=base_path%>img/check.svg'>
+    </div>
+    <img src='<%= base_path %>img/<%= item.img %>' class='bw'/>
+    <div class ='target-info'><%= item.album %>
+        <p class='result-year'><%= item['millions sold'] %></p>
+    </div>
+    <div class='source'><%= item.targetimgsource %></div></div>
+</div>

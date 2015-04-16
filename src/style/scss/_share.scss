@@ -1,0 +1,38 @@
+#shareCon {
+  background: #f8f8f9;
+  border-top: 10px solid #009bff;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+  display: none;
+  left: 30%;
+  padding: 3%;
+  position: absolute;
+  text-align: center;
+  top: 25%;
+  width: 40%;
+  z-index: 12;
+  @media (max-width: 1100px) {
+    left: 10%;
+    top: 15%;
+    width: 80%;
+  }
+}
+
+.congrats { 
+  font-family: "Futura Today Bold", Arial,sans-serif;
+  font-size: 1.8em;
+  margin-bottom: 0px;
+  text-transform: uppercase; 
+}
+
+#share {
+  font-size: 1.2em;
+}
+
+.share {
+  margin: 0 auto;
+  width: 12.5em;
+}
+
+.social {
+  width: 4em;
+}
