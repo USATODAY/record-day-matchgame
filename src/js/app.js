@@ -2,14 +2,16 @@ define(
   [
     'jquery',
     'underscore',
-    'templates'
+    'templates',
+    'config'
   ],
-  function(jQuery, _, templates){
+  function(jQuery, _, templates, config){
 
     //set up global variables
     var origXPos = [];
     var origYPos = [];
     var $overallCon = jQuery("#overallCon");
+    var matchData;
 
     var matchGameObj = matchGameObj || {};
         matchGameObj.correct = 0;
@@ -326,7 +328,7 @@ define(
           return false;
         }
       };
-      if(Modernizr.touch && isLandscape() && width < 900) {
+      if(config.isMobile && isLandscape() && width < 900) {
 
         //do landscape stuff here
         $("body").addClass("landscape");
@@ -341,27 +343,42 @@ define(
     matchGameObj.headerFix = function() {
       console.log("called");
       var width = $(window).width();
-      if(Modernizr.touch && width < 700) {
+      if(config.isMobile && width < 700) {
         console.log("header");
         $("#header").height(50);
       }
     };
 
     matchGameObj.init = function() {
+        var hostname = window.location.hostname;
 
-        matchGameObj.celebsInit();
-        matchGameObj.checkOrientation();
-        matchGameObj.headerFix();
+        var dataURL;
 
-        var blnIframeEmbed = window != window.parent;
-        if (blnIframeEmbed) {
-          jQuery("#header").css({"display" : "none"});
-          jQuery("#headCon").css("margin-top", "0"); 
-
-          var imgs = $(".atarget > img");
-
-          imgs.css("margin-top", "-20%");
+        if ((hostname == "localhost" || hostname == "10.0.2.2")) {
+            dataURL = 'data/data.json';
+        } else {
+            dataURL = "http://" + hostname + "/services/webproxy/?url=http://www.gannett-cdn.com/experiments/usatoday/2015/04/festivals/data/data.json";
         }
+
+
+        $.getJSON(dataURL, function(data) {
+            matchData = data;
+            $('.iapp-wrap').html(templates["app.html"]());
+
+            matchGameObj.celebsInit();
+            matchGameObj.checkOrientation();
+
+            var blnIframeEmbed = window != window.parent;
+            if (blnIframeEmbed) {
+              jQuery("#header").css({"display" : "none"});
+              jQuery("#headCon").css("margin-top", "0"); 
+
+              var imgs = $(".atarget > img");
+
+              imgs.css("margin-top", "-20%");
+            }
+        });
+        
     };
 
     $(window).resize(function() {
