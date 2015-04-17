@@ -6,7 +6,7 @@ this["templates"]["app.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div id="overallCon" class="group"  >\n    <div id="headerCon" class="overlay">\n        <h1 class="header-title">USA TODAY RECORD QUIZ</h1>\n        <div class="instruct">For Record Store Day (April 18), see how much you know about classic albums.</div>\n        <h2 class="round-title">Round 1: TOTAL SALES</h2>\n        <div class="instruct">Match the number of units sold (in millions) to the album</div>\n        <div class="button" id="begin-button">Begin</div>\n    </div>\n    <div class="round-container"></div>\n    <!--TWITTER AND FACEBOOK SHARING-->\n    <div id="shareCon">\n            \n    </div>\n    <!--END TWITTER AND FACEBOOK SHARING-->\n</div>\n    \n</div>\n\n<div id="landscape-warning">\n\t\t<h2>Please rotate your device.</h2>\n</div>\n\n';
+__p += '<div id="overallCon" class="group"  >\n    <div id="headerCon" class="iapp-overlay">\n        <h1 class="header-title">USA TODAY RECORD QUIZ</h1>\n        <div class="instruct">For Record Store Day (April 18), see how much you know about classic albums.</div>\n        <h2 class="round-title">Round 1: TOTAL SALES</h2>\n        <div class="instruct">Match the number of units sold (in millions) to the album</div>\n        <div class="button" id="begin-button">Begin</div>\n    </div>\n    <div class="round-container"></div>\n    <!--TWITTER AND FACEBOOK SHARING-->\n    <div id="shareCon">\n            \n    </div>\n    <!--END TWITTER AND FACEBOOK SHARING-->\n</div>\n    \n</div>\n\n<div id="landscape-warning">\n\t\t<h2>Please rotate your device.</h2>\n</div>\n\n';
 
 }
 return __p
@@ -74,7 +74,7 @@ this["templates"]["roundintro.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="headerCon" class="overlay">\n    <h2 class="round-title">Round ' +
+__p += '<div class="headerCon" >\n    <h2 class="round-title">Round ' +
 ((__t = (round )) == null ? '' : __t) +
 ': ' +
 ((__t = ( head )) == null ? '' : __t) +
