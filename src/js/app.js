@@ -23,7 +23,7 @@ define(
 
     var base_path = "http://www.gannett-cdn.com/experiments/usatoday/2015/04/record-day/";
 
-    var shareText = "In honor of Record Store Day (April 18), see how much you know about classic albums.";
+    var shareText = "For Record Store Day (April 18), see how much you know about classic albums.";
 
     var copy = [
         {
