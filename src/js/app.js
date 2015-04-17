@@ -28,18 +28,22 @@ define(
     var copy = [
         {
             "head": "Total Sales",
+            "round": "1",
             "chatter": "Match the number of units sold (in millions) to the album* <br>*U.S. sales. Source: RIAA"
         },
         {
             "head": "WEEKS AT NO. 1",
+            "round": "2",
             "chatter": "Match the number of weeks at the top of the sales chart to the album <br> Source: Billboard"
         },
         {
             "head": "MOST NO. 1 ALBUMS",
+            "round": "3",
             "chatter": "Match the number of No. 1 albums to the artist <br> Source: Billboard"
         },
         {
             "head": "CRYPTIC COVERS",
+            "round": "4",
             "chatter": "Match the album cover to the album title"
         }
     ];
@@ -156,6 +160,23 @@ define(
         }
     };
 
+    matchGameObj.launchRound = function() {
+        console.log("launch");
+        matchGameObj.animateCircles(matchGameObj.dragCon);
+        matchGameObj.dragCon.removeClass("hide");
+        matchGameObj.targetCon.removeClass("intro");
+        matchGameObj.$roundWrap.find('.headerCon').hide();
+        matchGameObj.countTime();
+        var introAnimationInterval = window.setInterval(function() {
+            matchGameObj.imgRatio(matchGameObj.$roundWrap);
+        }, 5);
+
+        window.setTimeout(function() {
+            window.clearInterval(introAnimationInterval);
+        }, 750);
+
+    };
+
     matchGameObj.startRound = function(data) {
         roundCorrect = 0;
         roundAttempts = 0;
@@ -167,6 +188,8 @@ define(
         matchGameObj.$roundWrap = $(selector);
         matchGameObj.dragCon = matchGameObj.$roundWrap.find(".headCon");
         matchGameObj.targetCon = matchGameObj.$roundWrap.find(".targetCon");
+
+
       
 
         matchGameObj.renderDrag(data);
@@ -182,17 +205,11 @@ define(
         });
 
         if (currentRound > 0) {
-            matchGameObj.animateCircles(matchGameObj.dragCon);
-            matchGameObj.dragCon.removeClass("hide");
-            matchGameObj.targetCon.removeClass("intro");
-            matchGameObj.countTime();
-            var introAnimationInterval = window.setInterval(function() {
-                matchGameObj.imgRatio(matchGameObj.$roundWrap);
-            }, 5);
 
-            window.setTimeout(function() {
-                window.clearInterval(introAnimationInterval);
-            }, 750);
+            matchGameObj.$roundWrap.append(templates["roundintro.html"](copy[currentRound]));
+            matchGameObj.$roundWrap.find('.begin-button-round-button').on("click", matchGameObj.launchRound);
+
+            
         }
         //make things draggable and droppable
       $( ".draggable" ).draggable({ revert: true });
@@ -413,7 +430,9 @@ define(
     };
 
     matchGameObj.addEventListeners = function() {
+        console.log("add listeners");
       $("#begin-button").on("click", function() {
+          console.log('begin');
         matchGameObj.startGame(); 
       });
 
