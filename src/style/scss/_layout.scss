@@ -21,7 +21,7 @@ body, div, html, {
     box-sizing:        border-box;   /* Everything else */
 }
 
-header, footer { box-sizing: content-box; }
+header, footer, header *, footer * { box-sizing: content-box; }
 
 
 body, div, html, {
@@ -69,7 +69,7 @@ body {
 	height: 100%;
 }
 
-img {
+.iapp-page-wrap img {
 	max-width: 100%;
 }
 

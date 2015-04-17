@@ -1,7 +1,9 @@
-html { font-weight: normal; font-family: "Futura Today Normal", Arial,sans-serif;}
+.iapp-page-wrap { font-weight: normal; font-family: "Futura Today Normal", Arial,sans-serif;}
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Futura Today Bold", Arial,sans-serif;
+.iapp-page-wrap {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Futura Today Bold", Arial,sans-serif;
+  }
 }
 
 .chatter {

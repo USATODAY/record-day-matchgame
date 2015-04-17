@@ -15,7 +15,7 @@ define(
     var origYPos = [];
     var $overallCon = jQuery("#overallCon");
     var matchData;
-    var currentRound = 3;
+    var currentRound = 0;
     var roundCorrect = 0;
     var roundAttempts = 0;
     var totalCorrect = 0;
@@ -467,13 +467,13 @@ define(
         if ((hostname == "localhost" || hostname == "10.0.2.2")) {
             dataURL = 'data/data.json';
         } else {
-            dataURL = "http://" + hostname + "/services/webproxy/?url=http://www.gannett-cdn.com/experiments/usatoday/2015/04/festivals/data/data.json";
+            dataURL = "http://" + hostname + "/services/webproxy/?url=http://www.gannett-cdn.com/experiments/usatoday/2015/04/record-day/data/data.json";
         }
 
 
         $.getJSON(dataURL, function(data) {
             matchData = data.games;
-            $('.iapp-wrap').html(templates["app.html"]());
+            $('.iapp-page-wrap').html(templates["app.html"]());
             $('#shareCon').html(templates["share.html"](matchGameObj.createShare(shareText)));
 
             matchGameObj.gameInit();
