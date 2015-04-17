@@ -8,18 +8,41 @@ define(
     'jquery_ui',
     'jquery_ui_touch_punch'
   ],
-  function(jQuery, _, templates, Analytics, config){
+  function(jQuery, _, templates, Analytics, config) {
 
     //set up global variables
     var origXPos = [];
     var origYPos = [];
     var $overallCon = jQuery("#overallCon");
     var matchData;
-    var currentRound = 0;
+    var currentRound = 3;
     var roundCorrect = 0;
     var roundAttempts = 0;
+    var totalCorrect = 0;
+    var totalAttempts = 0;
 
-    var base_path = "http://www.gannett-cdn.com/experiments/usatoday/2015/04/record-day/"
+    var base_path = "http://www.gannett-cdn.com/experiments/usatoday/2015/04/record-day/";
+
+    var shareText = "In honor of Record Store Day (April 18), see how much you know about classic albums.";
+
+    var copy = [
+        {
+            "head": "Total Sales",
+            "chatter": "Match the number of units sold (in millions) to the album* <br>*U.S. sales. Source: RIAA"
+        },
+        {
+            "head": "WEEKS AT NO. 1",
+            "chatter": "Match the number of weeks at the top of the sales chart to the album <br> Source: Billboard"
+        },
+        {
+            "head": "MOST NO. 1 ALBUMS",
+            "chatter": "Match the number of No. 1 albums to the artist <br> Source: Billboard"
+        },
+        {
+            "head": "CRYPTIC COVERS",
+            "chatter": "Match the album cover to the album title"
+        }
+    ];
 
     var matchGameObj = matchGameObj || {};
         matchGameObj.correct = 0;
@@ -55,35 +78,37 @@ define(
     //define timer function
     matchGameObj.countTime = function() {
       
+      $seconds = $('.seconds');
+      $minutes = $('.minutes');
 
       //default timelimit is 10 minutes
       var timeLimit = 10; 
 
       if (!matchGameObj.isCounting) { 
-        clearInterval(myInterval); 
+        clearInterval(matchGameObj.interval); 
         return;
       }
       
-      var myInterval = setInterval(function () {
+      matchGameObj.interval = setInterval(function () {
         ++matchGameObj.seconds;
         if (matchGameObj.seconds < 10) {
-          $("#seconds").html("0" + matchGameObj.seconds);
+          $seconds.html("0" + matchGameObj.seconds);
         }
         else if (matchGameObj.seconds === 60) {
-          $("#seconds").html("00");
+          $seconds.html("00");
         }
 
         else if (matchGameObj.seconds >= 10) {
-          $("#seconds").html(matchGameObj.seconds);
+          $seconds.html(matchGameObj.seconds);
         }
         
         if (matchGameObj.seconds == 60) {
           ++matchGameObj.minutes;
           if (matchGameObj.minutes < 10) {
-            $("#minutes").html("0" + matchGameObj.minutes);
+            $minutes.html("0" + matchGameObj.minutes);
           }
           else if (matchGameObj.minutes >= 10) {
-             $("#minutes").html(matchGameObj.minutes);
+             $minutes.html(matchGameObj.minutes);
           }
           matchGameObj.seconds = 0;
         }
@@ -95,7 +120,7 @@ define(
 
     matchGameObj.renderDrag = function(data) {
 
-        matchGameObj.dragCon.html(templates["infopanel.html"]());
+        matchGameObj.dragCon.html(templates["infopanel.html"]({info: copy[currentRound]}));
 
         matchGameObj.shuffle(data);
     //setup draggable area
@@ -122,7 +147,7 @@ define(
             var context = {
               item: item,
               base_path: base_path
-            }
+            };
             if (currentRound < 3) {
                 matchGameObj.targetCon.append(templates["target.html"](context));
             } else {
@@ -153,13 +178,21 @@ define(
         //scramble starting positions of drag circles
         matchGameObj.scrableStartPositions(".headcircle");
         $(".atarget > img").load(function(e) {
-            matchGameObj.imgRatio();
+            matchGameObj.imgRatio(matchGameObj.$roundWrap);
         });
 
         if (currentRound > 0) {
-            matchGameObj.animateCircles();
-             matchGameObj.dragCon.removeClass("hide");
+            matchGameObj.animateCircles(matchGameObj.dragCon);
+            matchGameObj.dragCon.removeClass("hide");
             matchGameObj.targetCon.removeClass("intro");
+            matchGameObj.countTime();
+            var introAnimationInterval = window.setInterval(function() {
+                matchGameObj.imgRatio(matchGameObj.$roundWrap);
+            }, 5);
+
+            window.setTimeout(function() {
+                window.clearInterval(introAnimationInterval);
+            }, 750);
         }
         //make things draggable and droppable
       $( ".draggable" ).draggable({ revert: true });
@@ -188,7 +221,7 @@ define(
     // set up celebrity match game function
     matchGameObj.gameInit = function() {
 
-      data = matchData[currentRound]
+      data = matchData[currentRound];
 
       //set up object variables
       matchGameObj.shareCon = jQuery("#shareCon");
@@ -208,8 +241,10 @@ define(
         currentRound ++;
         data = matchData[currentRound];
 
+        clearInterval(matchGameObj.interval);
+
         matchGameObj.startRound(data);
-    }
+    };
 
     matchGameObj.scrableStartPositions = function(selector) {
       $selector = $(selector);
@@ -217,8 +252,8 @@ define(
       $selector.css("top", startingHeight + "px");
     };
 
-    matchGameObj.animateCircles = function(){
-      $headCircles = $(".headcircle");
+    matchGameObj.animateCircles = function($parent){
+      $headCircles = $parent.find(".headcircle");
       for (i = 0; i < $headCircles.length; i ++) {
         var $current = $($headCircles[i]);
         $current.animate({top: 0}, 1000 + 250 * i, "easeOutBounce");
@@ -227,19 +262,26 @@ define(
     };
 
     matchGameObj.correctGuess = function(dragid, dropid, element) {
-      $("#" + dragid + "inside").css("display", "block");
-      $("#t" + dropid + " .messageright").css("display", "inline").delay(1500).fadeOut( "slow" );
+      $numAttempts = $('.numAttempts');
+      $numCorrect = $('.numCorrect');
+
+
+      matchGameObj.$roundWrap.find("#" + dragid + "inside").css("display", "block");
+      matchGameObj.$roundWrap.find("#t" + dropid + " .messageright").css("display", "inline").delay(1500).fadeOut( "slow" );
+      matchGameObj.$roundWrap.find("#t" + dropid).addClass('correct');
       element.draggable.css("visibility", "hidden");
-      var currentImg = $("#t" + dropid).find("img");
-      var currentName = $("#t" + dropid).find(".target-info");
+      var currentImg = matchGameObj.$roundWrap.find("#t" + dropid).find("img");
+      var currentName = matchGameObj.$roundWrap.find("#t" + dropid).find(".target-info");
       currentName.addClass("correct");
       currentImg.removeClass("bw");
       // matchGameObj.attempts ++;
       roundAttempts ++;
       roundCorrect ++;
+      totalAttempts ++;
+      totalCorrect ++;
       // matchGameObj.correct ++;
-      $("#numAttempts").text(roundAttempts);
-      $("#numCorrect").text(roundCorrect);
+      $numAttempts.text(roundAttempts);
+      $numCorrect.text(roundCorrect);
 
       //set correct time units for the finished message
       var timeUnits = {
@@ -266,9 +308,12 @@ define(
     };
 
     matchGameObj.incorrectGuess = function(dropid) {
-      $("#t" + dropid + " .messagewrong").css("display", "inline").delay(1500).fadeOut( "slow" );
+      $numAttempts = $('.numAttempts');
+
+      matchGameObj.$roundWrap.find("#t" + dropid + " .messagewrong").css("display", "inline").delay(1500).fadeOut( "slow" );
       roundAttempts ++;
-      $("#numAttempts").text(roundAttempts);
+      totalAttempts ++;
+      $numAttempts.text(roundAttempts);
     };
 
     matchGameObj.gameCompleted = function(timeUnits) {
@@ -296,7 +341,7 @@ define(
       $("#shareCon").fadeIn(100);
 
       var introAnimationInterval = window.setInterval(function() {
-        matchGameObj.imgRatio();
+        matchGameObj.imgRatio(matchGameObj.$roundWrap);
       }, 5);
 
       window.setTimeout(function() {
@@ -306,9 +351,11 @@ define(
     };
 
 
-    matchGameObj.imgRatio = function() {
-        var imgs = $(".atarget > img");
-        var targets = $(".atarget");
+    matchGameObj.imgRatio = function($el) {
+        var imgs = $el.find(".atarget > img");
+        var targets = $el.find(".atarget");
+
+        console.log(imgs.length);
 
         
         for (var i = 0; i < targets.length; i++) {
@@ -324,7 +371,7 @@ define(
             imgs.css("max-width", "none");
             imgs.css("height", h);
             imgs.css("width", correctWidth);
-             imgs.css("margin-left", -offset);
+            imgs.css("margin-left", -offset);
           }
           else {
             imgs.css("margin-left", "0");
@@ -350,7 +397,7 @@ define(
       $("#targetCon").removeClass("intro");
 
       var introAnimationInterval = window.setInterval(function() {
-        matchGameObj.imgRatio();
+        matchGameObj.imgRatio(matchGameObj.$roundWrap);
       }, 5);
 
       window.setTimeout(function() {
@@ -359,7 +406,7 @@ define(
       
 
       window.setTimeout(function() {
-        matchGameObj.animateCircles();
+        matchGameObj.animateCircles($('.headCon'));
       }, 800);
 
       
@@ -373,6 +420,8 @@ define(
       $(window).on('resize', function() {
         matchGameObj.checkOrientation();
       });
+
+      $('.social-popup').on('click', matchGameObj.socialClick);
     };
 
     matchGameObj.checkOrientation = function() {
@@ -425,6 +474,7 @@ define(
         $.getJSON(dataURL, function(data) {
             matchData = data.games;
             $('.iapp-wrap').html(templates["app.html"]());
+            $('#shareCon').html(templates["share.html"](matchGameObj.createShare(shareText)));
 
             matchGameObj.gameInit();
             matchGameObj.checkOrientation();
@@ -443,8 +493,46 @@ define(
     };
 
     $(window).resize(function() {
-      matchGameObj.imgRatio();
+      matchGameObj.imgRatio(matchGameObj.$roundWrap);
     });
+    
+    matchGameObj.createShare = function(shareString) {
+        var shareURL = window.location.href;
+        var fbShareURL = encodeURI(shareURL.replace('#', '%23'));
+        var twitterShareURL = encodeURIComponent(shareURL);
+        var emailLink = "mailto:?body=" + encodeURIComponent(shareString) +  "%0d%0d" + twitterShareURL + "&subject=";
+        
+        return {
+            'fb_id': config.facebook.app_id,
+            fbShare:  encodeURI(shareURL.replace('#', '%23')),
+            stillimage: base_path + "img/fb-post.jpg",
+            encodedShare: encodeURIComponent(shareString),
+            fb_redirect: 'http://' + window.location.hostname + '/pages/interactives/fb-share/',
+            email_link: "mailto:?body=" + encodeURIComponent(shareString) +  "%0d%0d" + encodeURIComponent(shareURL) + "&subject=",
+            twitterShare: encodeURIComponent(shareURL)
+        };
+
+    };
+
+    matchGameObj.socialClick = function(e) {
+        e.preventDefault();
+        Analytics.trackEvent('Share button clicked: ' + jQuery(e.currentTarget).attr('id'));
+
+        matchGameObj.windowPopup(e.currentTarget.href, 500, 300);
+    };
+
+    matchGameObj.windowPopup = function(url, width, height) {
+        // Calculate the position of the popup so
+        // it’s centered on the screen.
+        var left = (screen.width / 2) - (width / 2),
+        top = (screen.height / 2) - (height / 2);
+
+        window.open(
+            url,
+            "",
+            "menubar=no,toolbar=no,resizable=yes,scrollbars=yes,width=" + width + ",height=" + height + ",top=" + top + ",left=" + left
+        );
+    };
 
 
     return matchGameObj;

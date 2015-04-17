@@ -9,7 +9,7 @@
   text-align: center;
   top: 25%;
   width: 40%;
-  z-index: 12;
+  z-index: 600;
   @media (max-width: 1100px) {
     left: 10%;
     top: 15%;
@@ -30,9 +30,19 @@
 
 .share {
   margin: 0 auto;
-  width: 12.5em;
+  // width: 12.5em;
 }
 
 .social {
-  width: 4em;
+  display: inline-block;
+  width: 28%;
+  max-width: 28%;
+  img {
+      display: block;
+    max-width: 100%;
+  }
+
+  @media (max-width: 800px) {
+    // width: 2em;
+  }
 }

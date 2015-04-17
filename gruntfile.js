@@ -121,7 +121,7 @@ module.exports = function(grunt) {
       },
       js: {
         files: ['<%=config.src%>js/**/*.js'],
-        tasks: ['requirejs:dev']
+        tasks: ['jshint', 'requirejs:dev']
       },
       jst: {
         files: ['<%=config.src%>templates/*'],
@@ -303,17 +303,17 @@ module.exports = function(grunt) {
       },
       upload1: {
         files: {
-          '/17200/experiments/usatoday/2015/04/record-match/': 'js/main.js'
+          '/17200/experiments/usatoday/2015/04/record-day/': 'js/main.js'
         }
       },
       upload2: {
         files: {
-          '/17200/experiments/usatoday/2015/04/record-match/': 'style/project.css'
+          '/17200/experiments/usatoday/2015/04/record-day/': 'style/project.css'
         }
       },
       upload3: {
         files: {
-          '/17200/experiments/usatoday/2015/04/record-match/': 'data/*.json'
+          '/17200/experiments/usatoday/2015/04/record-day/': 'data/*.json'
         }
       }
     },
