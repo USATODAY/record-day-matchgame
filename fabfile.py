@@ -39,7 +39,7 @@ def upload():
     try:
         print "uploading data to the server..."
         ftp_conn = connect_ftp()
-        ftp_conn.cwd("usatoday/2015/04/festivals/data/")
+        ftp_conn.cwd("usatoday/2015/04/record-day/data/")
         upload_file(ftp_conn, create_absolute_path('data_tools/output/data.json'))
         print ("success!")
     except:
