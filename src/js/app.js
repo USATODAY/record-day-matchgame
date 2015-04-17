@@ -32,17 +32,17 @@ define(
             "chatter": "Match the number of units sold (in millions) to the album* <br>*U.S. sales. Source: RIAA"
         },
         {
-            "head": "WEEKS AT NO. 1",
+            "head": "Weeks at No. 1",
             "round": "2",
             "chatter": "Match the number of weeks at the top of the sales chart to the album <br> Source: Billboard"
         },
         {
-            "head": "MOST NO. 1 ALBUMS",
+            "head": "Number of No. 1 albums",
             "round": "3",
             "chatter": "Match the number of No. 1 albums to the artist <br> Source: Billboard"
         },
         {
-            "head": "CRYPTIC COVERS",
+            "head": "Cryptic Covers",
             "round": "4",
             "chatter": "Match the album cover to the album title"
         }
@@ -338,9 +338,10 @@ define(
       //stop timer
       matchGameObj.isCounting = false;
 
-      var endShareText = "I matched them all in " + totalAttempts + " attempts. See how much you know about classic albums.";
+      var endShareText = "I rocked the USA TODAY Record Quiz in " + totalAttempts + " tries. How well do you know classic albums?";
 
       $('#shareCon').html(templates["share.html"](matchGameObj.createShare(endShareText)));
+      $('.social-popup').on('click', matchGameObj.socialClick);
 
       //set total correct box to equal the total
       $("#totalCorrect").text(roundCorrect);
