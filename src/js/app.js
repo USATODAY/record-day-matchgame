@@ -338,6 +338,10 @@ define(
       //stop timer
       matchGameObj.isCounting = false;
 
+      var endShareText = "I matched them all in " + totalAttempts + " attempts. See how much you know about classic albums.";
+
+      $('#shareCon').html(templates["share.html"](matchGameObj.createShare(endShareText)));
+
       //set total correct box to equal the total
       $("#totalCorrect").text(roundCorrect);
 
